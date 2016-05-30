@@ -1,5 +1,14 @@
 module Handler.Home where
 
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TypeFamilies      #-}
+
+
+import Yesod
+import Control.Applicative
+
 import Import
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3,
                               withSmallInput)
@@ -14,14 +23,51 @@ import Text.Julius (RawJS (..))
 -- inclined, or create a single monolithic file.
 getHomeR :: Handler Html
 getHomeR = do
-    (formWidget, formEnctype) <- generateFormPost sampleForm
-    let submission = Nothing :: Maybe (FileInfo, Text)
-        handlerName = "getHomeR" :: Text
     defaultLayout $ do
         let (commentFormId, commentTextareaId, commentListId) = commentIds
         aDomId <- newIdent
-        setTitle "Welcome To Yesod!"
+        setTitle "Calculator API!"
         $(widgetFile "homepage")
+
+getAddR :: Int -> Int -> Handler TypedContent
+getAddR x y = selectRep $ do
+	provideRep $ return
+		[shamlet|  <p> Hi, with your input: #{x} + #{y} the answer is = #{result}|]
+	provideRep $ return $ object
+		[ "First value" .= x
+		, "Second value" .= y
+		]
+	   where result = x + y
+
+getSubR :: Int -> Int -> Handler TypedContent
+getSubR x y = selectRep $ do
+	provideRep $ return
+		[shamlet|  <p> Hi, with your input: #{x} - #{y} the answer is = #{result}|]
+	provideRep $ return $ object
+		[ "First value" .= x
+		, "Second value" .= y
+		]
+	   where result = x - y
+
+getMultiR :: Int -> Int -> Handler TypedContent
+getMultiR x y = selectRep $ do
+	provideRep $ return
+		[shamlet|  <p> Hi, with your input: #{x} * #{y} the answer is = #{result}|]
+	provideRep $ return $ object
+		[ "First value" .= x
+		, "Second value" .= y
+		]
+	   where result = x * y
+
+getDiviR :: Int -> Int -> Handler TypedContent
+getDiviR x y = selectRep $ do
+	provideRep $ return
+		[shamlet|  <p> Hi, with your input: #{x} / #{y} the answer is = #{result}|]
+	provideRep $ return $ object
+		[ "First value" .= x
+		, "Second value" .= y
+		]
+	   where result = x `div` y
 
 postHomeR :: Handler Html
 postHomeR = do
